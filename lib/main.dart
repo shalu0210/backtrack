@@ -1,66 +1,156 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 
-import 'services/storage_service.dart';
-import 'providers/expense_provider.dart';
-import 'screens/home_screen.dart';
-import 'theme/app_theme.dart';
-
-// ============================================================
-// MAIN ENTRY POINT
-// Initializes Hive local storage, sets up Provider state
-// management, and launches the app with Material 3 theming.
-// ============================================================
-
-// App constants for better maintainability
-const String appTitle = 'Expense Tracker';
-const String appVersion = "1.0.1";
-
-void main() async {
-  // Ensure Flutter engine is ready before calling native code
-  WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Hive storage (registers adapters & opens box)
-  await StorageService.init();
-
-  // Set the status bar style for a cleaner look
-  SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: Brightness.dark, // Improved visibility
-    ),
-  );
-
-  // Debug log for development tracking
-  debugPrint("App started successfully - Version $appVersion");
-
-  runApp(const ExpenseTrackerApp());
-}
-
-/// Root widget of the Expense Tracker application.
-/// Wraps the app in a ChangeNotifierProvider so all descendant
-/// widgets can access and listen to ExpenseProvider state changes.
-class ExpenseTrackerApp extends StatelessWidget {
-  const ExpenseTrackerApp({super.key});
+class LoginScreen extends StatelessWidget {
+  const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      // Create the provider and immediately load saved expenses
-      create: (_) => ExpenseProvider()..loadExpenses(),
-      child: MaterialApp(
-        title: appTitle,
-        debugShowCheckedModeBanner: false,
+    return Scaffold(
+      backgroundColor: Colors.grey[200],
 
-        // Material 3 light & dark themes defined in theme/app_theme.dart
-        theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
+      body: Center(
+        child: SingleChildScrollView(
+          child: Container(
+            margin: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 10,
+                  spreadRadius: 2,
+                )
+              ],
+            ),
 
-        // Uses system theme (can be changed to light/dark manually if needed)
-        themeMode: ThemeMode.system,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
-        home: const HomeScreen(),
+                /// Top drag handle (added)
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 15),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                ),
+
+                /// Title
+                const Text(
+                  "Login",
+                  style: TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// Email Field
+                const Text("Email"),
+                const SizedBox(height: 6),
+                TextField(
+                  decoration: InputDecoration(
+                    hintText: "Enter email",
+                    prefixIcon: const Icon(Icons.email_outlined),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
+
+                /// Password Field
+                const Text("Password"),
+                const SizedBox(height: 6),
+                TextField(
+                  obscureText: true,
+                  decoration: InputDecoration(
+                    hintText: "Enter password",
+                    prefixIcon: const Icon(Icons.lock_outline),
+                    filled: true,
+                    fillColor: Colors.grey[100],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 10),
+
+                /// Forgot Password
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(
+                      color: Colors.blue[700],
+                      fontSize: 12,
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// Gradient Login Button (improved)
+                Container(
+                  width: double.infinity,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
+                    ),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Center(
+                    child: Text(
+                      "Login",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                /// Divider (added)
+                Divider(color: Colors.grey[300]),
+
+                const SizedBox(height: 10),
+
+                /// Signup text
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text("Don’t have an account? "),
+                    Text(
+                      "Sign up",
+                      style: TextStyle(
+                        color: Colors.blue[700],
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
