@@ -13,6 +13,10 @@ import 'theme/app_theme.dart';
 // management, and launches the app with Material 3 theming.
 // ============================================================
 
+// App constants for better maintainability
+const String appTitle = 'Expense Tracker';
+const String appVersion = "1.0.1";
+
 void main() async {
   // Ensure Flutter engine is ready before calling native code
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,8 +28,12 @@ void main() async {
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark, // Improved visibility
     ),
   );
+
+  // Debug log for development tracking
+  debugPrint("App started successfully - Version $appVersion");
 
   runApp(const ExpenseTrackerApp());
 }
@@ -42,13 +50,15 @@ class ExpenseTrackerApp extends StatelessWidget {
       // Create the provider and immediately load saved expenses
       create: (_) => ExpenseProvider()..loadExpenses(),
       child: MaterialApp(
-        title: 'Expense Tracker',
+        title: appTitle,
         debugShowCheckedModeBanner: false,
 
         // Material 3 light & dark themes defined in theme/app_theme.dart
         theme: AppTheme.lightTheme,
         darkTheme: AppTheme.darkTheme,
-        themeMode: ThemeMode.system, // Follows system setting
+
+        // Uses system theme (can be changed to light/dark manually if needed)
+        themeMode: ThemeMode.system,
 
         home: const HomeScreen(),
       ),
