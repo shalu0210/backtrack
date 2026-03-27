@@ -10,6 +10,7 @@ A few resources to get you started if this is your first Flutter project:
 ![backtrack](https://github.com/shalu0210/backtrack/blob/0435ca915c4da433c9c80c3eacb8b44ce38cbc7a/Screenshot%202026-03-27%20134643.png)
 *A modern and user-friendly Expense Tracker mobile application built using Flutter. This app helps users manage their daily expenses efficiently by categorizing spending, visualizing data, and tracking recent transactions in a simple and intuitive interface.*
 ![backtrack](https://github.com/shalu0210/backtrack/blob/68bb6f23a408fd5e16e762de8f1f803bb364228a/Screenshot%202026-03-27%20134710.png)
+*The Add Expense feature is a core component of the Expense Tracker application, designed to provide a smooth and intuitive way for users to record their daily expenses.*
 
 - [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
 - [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
