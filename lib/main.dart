@@ -1,7 +1,56 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-class LoginScreen extends StatelessWidget {
+void main() {
+  runApp(const MyApp());
+}
+
+/// ================= PROVIDER =================
+class ExpenseProvider extends ChangeNotifier {
+  final List<Map<String, dynamic>> _expenses = [];
+
+  List<Map<String, dynamic>> get expenses => _expenses;
+
+  void addExpense(String title, double amount) {
+    _expenses.add({
+      "title": title,
+      "amount": amount,
+    });
+    notifyListeners();
+  }
+}
+
+/// ================= MAIN APP =================
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => ExpenseProvider(),
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: const LoginScreen(),
+      ),
+    );
+  }
+}
+
+/// ================= LOGIN SCREEN =================
+class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  bool isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -16,141 +65,144 @@ class LoginScreen extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(25),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black12,
-                  blurRadius: 10,
-                  spreadRadius: 2,
-                )
-              ],
             ),
 
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+            child: Form(
+              key: _formKey,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
 
-                /// Top drag handle (added)
-                Center(
-                  child: Container(
-                    width: 40,
-                    height: 4,
-                    margin: const EdgeInsets.only(bottom: 15),
-                    decoration: BoxDecoration(
-                      color: Colors.grey[400],
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                ),
-
-                /// Title
-                const Text(
-                  "Login",
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                /// Email Field
-                const Text("Email"),
-                const SizedBox(height: 6),
-                TextField(
-                  decoration: InputDecoration(
-                    hintText: "Enter email",
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                /// Password Field
-                const Text("Password"),
-                const SizedBox(height: 6),
-                TextField(
-                  obscureText: true,
-                  decoration: InputDecoration(
-                    hintText: "Enter password",
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    filled: true,
-                    fillColor: Colors.grey[100],
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 10),
-
-                /// Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Text(
-                    "Forgot Password?",
+                  const Text(
+                    "Login",
                     style: TextStyle(
-                      color: Colors.blue[700],
-                      fontSize: 12,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 20),
+                  const SizedBox(height: 20),
 
-                /// Gradient Login Button (improved)
-                Container(
-                  width: double.infinity,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF3B82F6), Color(0xFF2563EB)],
-                    ),
-                    borderRadius: BorderRadius.circular(14),
+                  /// Email
+                  const Text("Email"),
+                  TextFormField(
+                    controller: emailController,
+                    validator: (value) =>
+                        value!.isEmpty ? "Enter email" : null,
                   ),
-                  child: const Center(
-                    child: Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+
+                  const SizedBox(height: 15),
+
+                  /// Password
+                  const Text("Password"),
+                  TextFormField(
+                    controller: passwordController,
+                    obscureText: !isPasswordVisible,
+                    validator: (value) =>
+                        value!.isEmpty ? "Enter password" : null,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                        icon: Icon(isPasswordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            isPasswordVisible = !isPasswordVisible;
+                          });
+                        },
                       ),
                     ),
                   ),
+
+                  const SizedBox(height: 20),
+
+                  /// Login Button
+                  ElevatedButton(
+                    onPressed: () {
+                      if (_formKey.currentState!.validate()) {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => const HomeScreen()),
+                        );
+                      }
+                    },
+                    child: const Text("Login"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// ================= HOME SCREEN =================
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = Provider.of<ExpenseProvider>(context);
+
+    final titleController = TextEditingController();
+    final amountController = TextEditingController();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text("Expense Tracker")),
+
+      body: Column(
+        children: [
+
+          /// Add Expense
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                TextField(
+                  controller: titleController,
+                  decoration:
+                      const InputDecoration(hintText: "Title"),
+                ),
+                TextField(
+                  controller: amountController,
+                  keyboardType: TextInputType.number,
+                  decoration:
+                      const InputDecoration(hintText: "Amount"),
                 ),
 
-                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    final title = titleController.text;
+                    final amount =
+                        double.tryParse(amountController.text) ?? 0;
 
-                /// Divider (added)
-                Divider(color: Colors.grey[300]),
-
-                const SizedBox(height: 10),
-
-                /// Signup text
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don’t have an account? "),
-                    Text(
-                      "Sign up",
-                      style: TextStyle(
-                        color: Colors.blue[700],
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
+                    provider.addExpense(title, amount);
+                  },
+                  child: const Text("Add Expense"),
                 ),
               ],
             ),
           ),
-        ),
+
+          const Divider(),
+
+          /// Expense List
+          Expanded(
+            child: ListView.builder(
+              itemCount: provider.expenses.length,
+              itemBuilder: (context, index) {
+                final expense = provider.expenses[index];
+                return ListTile(
+                  title: Text(expense['title']),
+                  trailing: Text("₹${expense['amount']}"),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
